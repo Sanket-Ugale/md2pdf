@@ -1,0 +1,28 @@
+services:
+  web:
+    build: .
+    container_name: md-to-pdf
+    ports:
+      - "8004:8004"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - md_to_pdf_tmp:/app/tmp
+    # Chromium needs enough shared memory for reliable PDF rendering
+    shm_size: "1gb"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8004/health')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+volumes:
+  md_to_pdf_tmp:

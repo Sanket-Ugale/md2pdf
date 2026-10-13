@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Convert Markdown to high-fidelity PDF — free, private, no signup." />
+  <meta name="theme-color" content="#f7f8fa" />
+  <title>MD → PDF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="atmosphere" aria-hidden="true">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <div class="grid-fade"></div>
+  </div>
+
+  <header class="top">
+    <a class="brand" href="/" aria-label="MD to PDF home">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="brand-mark-inner"></span>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">MD → PDF</span>
+        <span class="brand-tag">Instant · Private</span>
+      </span>
+    </a>
+  </header>
+
+  <main class="hero" id="hero">
+    <div class="intro" id="intro">
+      <p class="eyebrow">Markdown converter</p>
+      <h1 class="headline">
+        <span class="headline-line">Markdown in.</span>
+        <span class="headline-line accent-line">Polished PDF out.</span>
+      </h1>
+      <p class="lede">
+        Drop a <code>.md</code> file or paste Markdown code directly. Preview the result. Download a clean A4 PDF with GitHub styling and diagrams.
+      </p>
+    </div>
+
+    <form id="convert-form" class="uploader" novalidate>
+      <div class="mode-tabs" role="tablist" aria-label="Input mode">
+        <button
+          type="button"
+          class="mode-tab is-active"
+          id="tab-upload"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-upload"
+        >
+          <svg class="mode-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Upload File</span>
+        </button>
+        <button
+          type="button"
+          class="mode-tab"
+          id="tab-paste"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-paste"
+        >
+          <svg class="mode-tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Paste Markdown</span>
+        </button>
+      </div>
+
+      <!-- Upload Panel -->
+      <div class="panel-upload" id="panel-upload" role="tabpanel" aria-labelledby="tab-upload">
+        <input
+          id="file-input"
+          type="file"
+          name="file"
+          accept=".md,.markdown,text/markdown,text/plain"
+          hidden
+        />
+
+        <div
+          class="drop-surface"
+          id="drop-surface"
+          tabindex="0"
+          role="button"
+          aria-controls="file-input"
+          aria-label="Choose a Markdown file"
+        >
+          <div class="drop-glow" aria-hidden="true"></div>
+
+          <div class="drop-idle" id="drop-idle">
+            <div class="icon-ring" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="drop-title">Drop your Markdown here</p>
+            <p class="drop-hint">or click to browse · <span>.md</span> up to 5&nbsp;MB</p>
+          </div>
+
+          <div class="file-chip" id="file-chip" hidden>
+            <div class="file-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="file-meta">
+              <p class="file-name" id="file-name"></p>
+              <p class="file-size" id="file-size"></p>
+            </div>
+            <span class="file-badge">Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paste Panel -->
+      <div class="panel-paste" id="panel-paste" role="tabpanel" aria-labelledby="tab-paste" hidden>
+        <div class="editor-header">
+          <div class="filename-pill" title="Exported PDF filename">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
+            <input
+              type="text"
+              id="custom-filename"
+              class="filename-input"
+              placeholder="document"
+              value="document"
+              aria-label="Export PDF filename"
+              maxlength="60"
+            />
+            <span class="filename-ext">.pdf</span>
+          </div>
+
+          <div class="editor-tools">
+            <button type="button" class="tool-btn" id="load-sample-btn" title="Load sample with flowchart">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.6-6.2 4.6 2.3-7.3-6.1-4.5h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+              <span>Sample</span>
+            </button>
+            <button type="button" class="tool-btn" id="clear-paste-btn" title="Clear editor content">
+              <span>Clear</span>
+            </button>
+            <span class="editor-stats" id="paste-stats" aria-live="polite">0 chars</span>
+          </div>
+        </div>
+
+        <div class="editor-surface">
+          <textarea
+            id="markdown-textarea"
+            class="markdown-textarea"
+            placeholder="Type or paste Markdown code here...&#10;&#10;# Project Overview&#10;Write text, tables, or Mermaid diagrams:&#10;&#10;```mermaid&#10;flowchart TD&#10;    A[Start] --> B[Generate PDF]&#10;```"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="editor-footer">
+          <span class="shortcut-tip">
+            <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to convert · <kbd>Tab</kbd> to indent
+          </span>
+        </div>
+      </div>
+
+      <!-- Shared Converting Progress Panel -->
+      <div class="converting-panel" id="converting-panel" hidden>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="converting-label" id="converting-label">Rendering PDF…</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions" id="actions" hidden>
+        <button type="submit" class="btn btn-primary" id="convert-btn">
+          <span class="btn-label">Convert to PDF</span>
+          <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button type="button" class="btn btn-ghost" id="clear-btn">Remove file</button>
+      </div>
+
+      <div class="status" id="status" role="status" aria-live="polite" hidden></div>
+    </form>
+
+    <section class="preview" id="preview" hidden>
+      <div class="preview-bar">
+        <div class="preview-meta">
+          <span class="preview-pill">Preview</span>
+          <div>
+            <h2 class="preview-title" id="preview-name">document.pdf</h2>
+            <p class="preview-sub" id="preview-sub">A4 · Ready to download</p>
+          </div>
+        </div>
+        <div class="preview-actions">
+          <a class="btn btn-primary" id="download-btn" href="#" download>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4v12M12 16l-4-4M12 16l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 20h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Download
+          </a>
+          <button type="button" class="btn btn-ghost" id="close-preview-btn">Close</button>
+        </div>
+      </div>
+      <div class="preview-stage">
+        <div class="preview-skeleton" id="preview-skeleton" aria-hidden="true">
+          <div class="skel-line w60"></div>
+          <div class="skel-line w90"></div>
+          <div class="skel-line w75"></div>
+          <div class="skel-block"></div>
+          <div class="skel-line w85"></div>
+          <div class="skel-line w50"></div>
+        </div>
+        <iframe
+          id="preview-frame"
+          class="preview-frame"
+          title="PDF preview"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Files stay on this machine only while converting — then they’re removed.</p>
+  </footer>
+
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>
